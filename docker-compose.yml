@@ -1,0 +1,19 @@
+version: '3.4'
+
+services:
+  compentio.notes.graphql.api:
+    image: ${DOCKER_REGISTRY-}compentio.notes.graphql.api
+    build:
+      context: .
+      dockerfile: Compentio.Notes.GraphQL.Api/Dockerfile
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    environment:
+      - AUTH=yes
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=p@ssw0rd
+    volumes:
+      - ${MONGO_HOST_DATA}/db:/data/db
+    ports:
+      - "27017:27017"
