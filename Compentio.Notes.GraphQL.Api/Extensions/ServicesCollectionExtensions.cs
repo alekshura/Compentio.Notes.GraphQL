@@ -2,7 +2,6 @@
 {
     using Microsoft.Extensions.DependencyInjection;
     using Compentio.Notes.GraphQL.Notes;
-    using Compentio.SourceMapper.DependencyInjection;
 
     public static class ServicesCollectionExtensions
     {
@@ -12,7 +11,7 @@
 
             // add new services below 
             services.AddTransient<INotesService, NotesService>();
-            services.AddMappers();
+            services.AddTransient<INotesMapper, NotesMapper>();
         }
     }
 }
