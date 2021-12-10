@@ -22,8 +22,6 @@ namespace Compentio.Notes.GraphQL.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddConfiguration(Configuration);
-
-            services.AddApplicationInsightsTelemetry();
             
             services.AddAppProblemDetails(Environment);
 
@@ -31,11 +29,10 @@ namespace Compentio.Notes.GraphQL.Api
 
             services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
             
-            services.AddSwagger(Configuration);
-            
-            services.AddServices();
-            
-            services.AddRepositories();
+            services.AddSwagger(Configuration)
+                .AddServices()
+                .AddRepositories()
+                .ConfigureGraphQL();            
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -47,7 +44,10 @@ namespace Compentio.Notes.GraphQL.Api
 
             app.UseAppExceptionHandler(env);
 
-            app.UseHttpsRedirection();
+            if (!env.IsDevelopment())
+            {
+                app.UseHttpsRedirection();
+            }
 
             app.UseRouting();
 
@@ -55,7 +55,9 @@ namespace Compentio.Notes.GraphQL.Api
 
             app.UseAuthorization();
 
-            app.UseAppSwaggerUI(Configuration);          
+            app.UseAppSwaggerUI(Configuration);
+
+            app.UseGraphQLAltair();
 
             app.UseEndpoints(endpoints =>
             {

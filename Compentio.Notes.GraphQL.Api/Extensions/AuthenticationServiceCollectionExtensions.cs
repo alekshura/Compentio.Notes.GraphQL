@@ -4,14 +4,16 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Identity.Web;
+    using System.Diagnostics.CodeAnalysis;
 
+    [ExcludeFromCodeCoverage]
     public static class AuthenticationServiceCollectionExtensions
     {
-        public static void AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-               .AddMicrosoftIdentityWebApi(configuration.GetSection("AzureAd"));
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
+            return services;
         }
     }
 }

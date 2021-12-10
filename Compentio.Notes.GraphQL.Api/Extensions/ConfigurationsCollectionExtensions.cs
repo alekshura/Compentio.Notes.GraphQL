@@ -3,15 +3,17 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
+    using System.Diagnostics.CodeAnalysis;
 
+    [ExcludeFromCodeCoverage]
     public static class ConfigurationsCollectionExtensions
     {
-        public static void AddConfiguration(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
             // Add configuration here
-
-            services.Configure<GraphQL.MongoDbSettings>(configuration.GetSection(nameof(GraphQL.MongoDbSettings)));
-            services.AddSingleton(sp => sp.GetRequiredService<IOptions<GraphQL.MongoDbSettings>>().Value);
+            services.Configure<MongoDbSettings>(configuration.GetSection(nameof(MongoDbSettings)));
+            services.AddSingleton(sp => sp.GetRequiredService<IOptions<MongoDbSettings>>().Value);
+            return services;
         }
     }
 }

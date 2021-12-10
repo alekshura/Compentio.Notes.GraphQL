@@ -5,14 +5,14 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.OpenApi.Models;
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
 
+    [ExcludeFromCodeCoverage]
     public static class OpenApiCollectionExtensions
     {
-        public static void AddSwagger(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddSwagger(this IServiceCollection services, IConfiguration configuration)
         {
-            var azureAdOptions = configuration.GetSection("AzureAd").Get<AzureAd>();
-
             services.AddSwaggerGen(c =>
             {
                 var filePath = Path.Combine(AppContext.BaseDirectory, "Compentio.Notes.GraphQL.Api.xml");
@@ -33,8 +33,8 @@
                     {
                         Implicit = new OpenApiOAuthFlow
                         {
-                            AuthorizationUrl = new Uri(azureAdOptions.AuthorizationUrl),
-                            TokenUrl = new Uri(azureAdOptions.TokenUrl),
+                            //AuthorizationUrl = new Uri(azureAdOptions.AuthorizationUrl),
+                            //TokenUrl = new Uri(azureAdOptions.TokenUrl),
                         }
                     }
                 };
@@ -57,20 +57,20 @@
 
                 c.IncludeXmlComments(filePath);
             });
+
+            return services;
         }
 
         public static void UseAppSwaggerUI(this IApplicationBuilder app, IConfiguration configuration)
         {
             app.UseSwagger();
 
-            var azureAdOptions = configuration.GetSection("AzureAd").Get<AzureAd>();
-
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Compentio.Notes.GraphQL.Api");
-                c.OAuthClientId(azureAdOptions.ClientId);
+                //c.OAuthClientId(azureAdOptions.ClientId);
                 c.OAuthUseBasicAuthenticationWithAccessCodeGrant();
-                c.OAuthScopes(azureAdOptions.Scopes);
+                //c.OAuthScopes(azureAdOptions.Scopes);
                 c.OAuthScopeSeparator(" ");
             });
         }

@@ -7,7 +7,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["Compentio.Notes.GraphQL.Api/Compentio.Notes.GraphQL.Api.csproj", "Compentio.Notes.GraphQL.Reports/"]
+COPY ["Compentio.Notes.GraphQL.Api/Compentio.Notes.GraphQL.Api.csproj", "Compentio.Notes.GraphQL.Api/"]
 RUN dotnet restore "Compentio.Notes.GraphQL.Api/Compentio.Notes.GraphQL.Api.csproj"
 COPY . .
 WORKDIR "/src/Compentio.Notes.GraphQL.Api"

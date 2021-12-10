@@ -1,7 +1,9 @@
 ﻿namespace Compentio.Notes.GraphQL.Notes
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
+    [ExcludeFromCodeCoverage]
     public record Note
     {
         public string Id { get; set; }

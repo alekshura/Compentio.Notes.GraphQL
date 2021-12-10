@@ -1,11 +1,21 @@
 version: '3.4'
 
 services:
-  compentio.notes.graphql.api:
-    image: ${DOCKER_REGISTRY-}compentio.notes.graphql.api
-    build:
-      context: .
-      dockerfile: Compentio.Notes.GraphQL.Api/Dockerfile
+  #compentio.notes.graphql.api:
+  #  image: ${DOCKER_REGISTRY-}compentio.notes.graphql.api
+  #  build:
+  #    context: .
+  #    dockerfile: Compentio.Notes.GraphQL.Api/Dockerfile
+  #  environment:
+  #    - ASPNETCORE_ENVIRONMENT=Development
+  #    - ASPNETCORE_URLS=https://+:443;http://+:80
+  #  ports:
+  #    - "80"
+  #    - "443"
+  #  volumes:
+  #    - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+  #    - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
   mongo:
     container_name: mongo
     image: mongo:latest
@@ -16,4 +26,4 @@ services:
     volumes:
       - ${MONGO_HOST_DATA}/db:/data/db
     ports:
-      - "27017:27017"
+      - "27017:27017"  

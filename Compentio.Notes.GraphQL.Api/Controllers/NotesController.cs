@@ -8,10 +8,9 @@
     using System.Threading.Tasks;
     using System;
 
-    [Authorize]
+   // [Authorize]
     [ApiController]
     [ApiConventionType(typeof(DefaultApiConventions))]
-    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
     [Route("api/notes")]
     public class NotesController : ControllerBase
     {

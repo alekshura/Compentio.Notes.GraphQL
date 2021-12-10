@@ -5,7 +5,9 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using System.Diagnostics.CodeAnalysis;
 
+    [ExcludeFromCodeCoverage]
     public static class ExceptionHandlerExtensions
     {
         public static void AddAppProblemDetails(this IServiceCollection services, IHostEnvironment env)

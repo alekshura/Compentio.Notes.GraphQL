@@ -1,6 +1,5 @@
-﻿namespace Compentio.Notes.GraphQL
+﻿namespace Compentio.Notes.GraphQL.Notes
 {
-    using Compentio.Notes.GraphQL.Notes;
     using Compentio.SourceMapper.Attributes;
 
     [Mapper]
