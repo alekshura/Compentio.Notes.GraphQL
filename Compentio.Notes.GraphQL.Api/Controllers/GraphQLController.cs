@@ -12,9 +12,9 @@
     [Route("api")]
     public class GraphQLController : ControllerBase
     {
-        private readonly IGraphQLService _graphQLService;
+        private readonly IGraphQLProcessor _graphQLService;
 
-        public GraphQLController(IGraphQLService graphQLService)
+        public GraphQLController(IGraphQLProcessor graphQLService)
         {
             _graphQLService = graphQLService;
         }
@@ -24,7 +24,7 @@
         [ProducesResponseType(typeof(Error[]), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromBody] GraphQLRequest request)
         {
-            var result = await _graphQLService.ProcessRequest(request);
+            var result = await _graphQLService.ProcessQuery(request);
             if (result.HasError)
             {
                 return BadRequest(result);

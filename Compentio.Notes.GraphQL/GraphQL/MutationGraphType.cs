@@ -27,21 +27,19 @@ namespace Compentio.Notes.GraphQL.GraphQL
                     var note = context.GetArgument<Note>("note");
                     return notesService.AddNote(note);
                 });
-        }
-
-        public sealed class NoteInputGraphType : InputObjectGraphType<Note>
-        {
-            public NoteInputGraphType()
-            {
-                Name = "NoteInput";
-                Field(r => r.Description).Description("Description of the note");
-                Field(r => r.Title).Description("Note title");
-                Field(r => r.DocumentId).Description("Linked document id");
-                Field(r => r.Timestamp).Description("Modification timestamp");
-            }
-        }
+        }       
     }
 
-
-    
+    [ExcludeFromCodeCoverage]
+    public sealed class NoteInputGraphType : InputObjectGraphType<Note>
+    {
+        public NoteInputGraphType()
+        {
+            Name = "NoteInput";
+            Field(r => r.Description);
+            Field(r => r.Title);
+            Field(r => r.DocumentId);
+            Field(r => r.Timestamp);
+        }
+    }
 }

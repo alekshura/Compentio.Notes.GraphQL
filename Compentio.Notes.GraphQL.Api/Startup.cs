@@ -7,6 +7,7 @@ namespace Compentio.Notes.GraphQL.Api
     using Microsoft.Extensions.Hosting;
     using Compentio.Notes.GraphQL.Api.Middleware;
     using Compentio.Notes.GraphQL.Api.Extensions;
+    using Microsoft.Extensions.Logging;
 
     public class Startup
     {
@@ -32,22 +33,24 @@ namespace Compentio.Notes.GraphQL.Api
             services.AddSwagger(Configuration)
                 .AddServices()
                 .AddRepositories()
-                .ConfigureGraphQL();            
+                .ConfigureGraphQL();
+
+            services.AddLogging(builder => builder.AddConsole());
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (!env.IsDevelopment())
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
             {
                 app.UseHttpHeaders();
+                app.UseHttpsRedirection();
             }
 
             app.UseAppExceptionHandler(env);
-
-            if (!env.IsDevelopment())
-            {
-                app.UseHttpsRedirection();
-            }
 
             app.UseRouting();
 

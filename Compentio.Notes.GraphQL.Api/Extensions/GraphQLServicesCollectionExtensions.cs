@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics.CodeAnalysis;
-using GraphQL.Types;
 using Compentio.Notes.GraphQL.GraphQL;
 using GraphQL.MicrosoftDI;
 using GraphQL;
@@ -14,10 +13,10 @@ namespace Compentio.Notes.GraphQL.Api.Extensions
     {
         public static IServiceCollection ConfigureGraphQL(this IServiceCollection services)
         {
-            services.AddTransient<IGraphQLService, GraphQLService>()
+            services.AddTransient<IGraphQLProcessor, GraphQLProcessor>()
                 .AddGraphQL().AddSelfActivatingSchema<DataSchema>()
                 .AddGraphTypes()
-                .AddSystemTextJson();
+                .AddSystemTextJson(options => options.PropertyNameCaseInsensitive = true);
 
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
