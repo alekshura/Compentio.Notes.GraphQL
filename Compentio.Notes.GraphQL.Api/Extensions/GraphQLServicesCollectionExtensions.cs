@@ -5,6 +5,7 @@ using GraphQL.MicrosoftDI;
 using GraphQL;
 using Compentio.Notes.GraphQL.Notes;
 using GraphQL.SystemTextJson;
+using GraphQL.DataLoader;
 
 namespace Compentio.Notes.GraphQL.Api.Extensions
 {
@@ -18,6 +19,8 @@ namespace Compentio.Notes.GraphQL.Api.Extensions
                 .AddGraphTypes()
                 .AddSystemTextJson(options => options.PropertyNameCaseInsensitive = true);
 
+            services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
+            services.AddSingleton<DataLoaderDocumentListener>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             return services;
