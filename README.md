@@ -2,8 +2,8 @@
 
 This is .NET 5 GraphQL Web API application with **MongoDB** underneath.
 
-![GitHub top language](https://img.shields.io/github/languages/top/alekshura/Compentio.Ferragosto.Notes)
-![GitHub contributors](https://img.shields.io/github/contributors/alekshura/Compentio.Ferragosto.Notes)
+![GitHub top language](https://img.shields.io/github/languages/top/alekshura/Compentio.Notes.GraphQL)
+![GitHub contributors](https://img.shields.io/github/contributors/alekshura/Compentio.Notes.GraphQL)
 
 ## Intro
 - **GraphQL** is transport agnostic **query language** while **REST** is **_HTTP_ based architectural style** of designing _API_. 
