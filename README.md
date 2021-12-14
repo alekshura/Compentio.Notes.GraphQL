@@ -1,7 +1,5 @@
 # Compentio.Notes.GraphQL
 
-This is .NET 5 GraphQL Web API application with **MongoDB** underneath.
-
 ![GitHub top language](https://img.shields.io/github/languages/top/alekshura/Compentio.Notes.GraphQL)
 ![GitHub contributors](https://img.shields.io/github/contributors/alekshura/Compentio.Notes.GraphQL)
 
