@@ -4,10 +4,10 @@
     using Microsoft.AspNetCore.Mvc;
     using Compentio.Notes.GraphQL.Notes;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
     using Compentio.Notes.GraphQL.GraphQL;
+    using Compentio.Notes.GraphQL.Api.ApiConventions;
 
-   // [Authorize]
+    // [Authorize]
     [ApiController]
     [Route("api")]
     public class GraphQLController : ControllerBase
@@ -20,8 +20,7 @@
         }
 
         [HttpPost("/graphql")]
-        [ProducesResponseType(typeof(GraphQLResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(Error[]), StatusCodes.Status400BadRequest)]
+        [ApiConventionMethod(typeof(GraphQLApiConventions), nameof(GraphQLApiConventions.Post))]
         public async Task<IActionResult> Post([FromBody] GraphQLRequest request)
         {
             var result = await _graphQLService.ProcessQuery(request);

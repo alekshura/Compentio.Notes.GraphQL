@@ -34,8 +34,4 @@
     <ProjectReference Include="..\Compentio.Notes.GraphQL\Compentio.Notes.GraphQL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Confiruration\" />
-  </ItemGroup>
-
 </Project>

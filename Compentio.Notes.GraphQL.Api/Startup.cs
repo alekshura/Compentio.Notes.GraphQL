@@ -28,14 +28,14 @@ namespace Compentio.Notes.GraphQL.Api
 
             services.AddAuthentication(Configuration);
 
-            services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+            services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase);
             
             services.AddSwagger(Configuration)
                 .AddServices()
                 .AddRepositories()
                 .ConfigureGraphQL();
 
-            services.AddLogging(builder => builder.AddConsole());
+            services.AddLogging(configure => configure.AddConsole());
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

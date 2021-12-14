@@ -19,7 +19,6 @@ namespace Compentio.Notes.GraphQL.GraphQL
                 resolve: context =>
                 {
                     var noteId = context.GetArgument<string>("noteId");
-                    context.UserContext.SetFetchId(noteId);
                     return notesService.GetNote(noteId);
                 });
 
