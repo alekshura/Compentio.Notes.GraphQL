@@ -16,16 +16,34 @@ namespace Compentio.Notes.GraphQL.GraphQL
             FieldAsync<NoteGraphType, Note>(
                 "addNote",
                 "Add note to database.",
-                new QueryArguments(
-                    new QueryArgument<NonNullGraphType<NoteInputGraphType>>
-                    {
-                        Name = "note",
-                        Description = "User note"
-                    }),
+                new QueryArguments(new QueryArgument<NonNullGraphType<NoteInputGraphType>>{ Name = "note" }),
                 context =>
                 {
                     var note = context.GetArgument<Note>("note");
                     return notesService.AddNote(note);
+                });
+
+            FieldAsync<NoteGraphType, Note>(
+                "updateNote",
+                "Update note in database.",
+                new QueryArguments(
+                    new QueryArgument<NonNullGraphType<NoteInputGraphType>> { Name = "note" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "noteId" }),
+                context =>
+                {
+                    var note = context.GetArgument<Note>("note");
+                    note.Id = context.GetArgument<string>("noteId");
+                    return notesService.UpdateNote(note);
+                });
+
+            Field<StringGraphType>(
+                "deleteNote",
+                "Delete note from database.",
+                new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "noteId" }),
+                context =>
+                {
+                    var noteId = context.GetArgument<string>("noteId");
+                    return notesService.DeleteNote(noteId);
                 });
         }       
     }
