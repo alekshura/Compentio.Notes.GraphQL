@@ -2,16 +2,14 @@
 {
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Identity.Web.Resource;
     using Compentio.Notes.GraphQL.Notes;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using System;
-
-   // [Authorize]
+        
     [ApiController]
     [ApiConventionType(typeof(DefaultApiConventions))]
     [Route("api/notes")]
+    [Authorize]
     public class NotesController : ControllerBase
     {
         private readonly INotesService _notesService;

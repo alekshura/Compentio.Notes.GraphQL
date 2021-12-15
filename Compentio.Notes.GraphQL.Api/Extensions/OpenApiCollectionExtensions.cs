@@ -1,5 +1,6 @@
 ﻿namespace Compentio.Notes.GraphQL.Api.Extensions
 {
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -25,35 +26,24 @@
                 var securitySchema = new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                    Name = "oauth2",
+                    Name = "Authorization",
                     In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.OAuth2,
-                    Scheme = "Bearer",
-                    Flows = new OpenApiOAuthFlows
-                    {
-                        Implicit = new OpenApiOAuthFlow
-                        {
-                            //AuthorizationUrl = new Uri(azureAdOptions.AuthorizationUrl),
-                            //TokenUrl = new Uri(azureAdOptions.TokenUrl),
-                        }
-                    }
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
                 };
 
-                c.AddSecurityDefinition("oauth2", securitySchema);
-
+                c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, securitySchema);
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
                     {
-                        new OpenApiSecurityScheme
                         {
-                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "oauth2" },
-                            Scheme = "oauth2",
-                            Name = "oauth2",
-                            In = ParameterLocation.Header
-                        },
-                        new[] { "access_as_user" }
+                            new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = JwtBearerDefaults.AuthenticationScheme}
+                            },
+                            Array.Empty<string>()
+                        }
                     }
-                });
+                );
 
                 c.IncludeXmlComments(filePath);
             });
@@ -61,17 +51,13 @@
             return services;
         }
 
-        public static void UseAppSwaggerUI(this IApplicationBuilder app, IConfiguration configuration)
+        public static void UseAppSwaggerUI(this IApplicationBuilder app)
         {
             app.UseSwagger();
 
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Compentio.Notes.GraphQL.Api");
-                //c.OAuthClientId(azureAdOptions.ClientId);
-                c.OAuthUseBasicAuthenticationWithAccessCodeGrant();
-                //c.OAuthScopes(azureAdOptions.Scopes);
-                c.OAuthScopeSeparator(" ");
             });
         }
     }

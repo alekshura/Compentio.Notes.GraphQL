@@ -7,7 +7,7 @@
     using Compentio.Notes.GraphQL.GraphQL;
     using Compentio.Notes.GraphQL.Api.ApiConventions;
 
-    // [Authorize]
+    [Authorize]
     [ApiController]
     [Route("api")]
     public class GraphQLController : ControllerBase

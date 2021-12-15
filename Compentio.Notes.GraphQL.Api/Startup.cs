@@ -58,7 +58,7 @@ namespace Compentio.Notes.GraphQL.Api
 
             app.UseAuthorization();
 
-            app.UseAppSwaggerUI(Configuration);
+            app.UseAppSwaggerUI();
 
             app.UseGraphQLAltair();
 

@@ -5,6 +5,8 @@ using GraphQL;
 using GraphQL.SystemTextJson;
 using GraphQL.Validation;
 using System.Text.Json;
+using System.Linq;
+using Compentio.Notes.GraphQL.GraphQL.Validation;
 
 namespace Compentio.Notes.GraphQL.Notes
 {
@@ -32,7 +34,7 @@ namespace Compentio.Notes.GraphQL.Notes
                 o.Query = request.Query;
                 o.Inputs = request.Variables.ToInputs();
                 o.OperationName = request.OperationName;
-                o.ValidationRules = DocumentValidator.CoreRules;
+                o.ValidationRules = DocumentValidator.CoreRules.Concat(new[] { new NoteValidationRule() });
                 o.EnableMetrics = false;
                 o.ThrowOnUnhandledException = true;
             });

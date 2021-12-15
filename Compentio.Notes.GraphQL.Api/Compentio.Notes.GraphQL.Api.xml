@@ -39,5 +39,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:Compentio.Notes.GraphQL.Api.Extensions.AuthenticationServiceCollectionExtensions.AddAuthentication(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Add authentication bypass
+            </summary>
+            <param name="services"></param>
+            <param name="configuration"></param>
+            <returns></returns>
+        </member>
     </members>
 </doc>
