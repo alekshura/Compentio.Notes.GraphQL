@@ -289,7 +289,7 @@ services.AddAuthorization(o => {
                 o.AddPolicy("AdminPolicy", policyBuilder => policyBuilder.RequireClaim("role", "Admin"));
             });
 
-            services.AddHttpContextAccessor().AddTransient<IClaimsPrincipalAccessor, DefaultClaimsPrincipalAccessor>();
+services.AddHttpContextAccessor().AddTransient<IClaimsPrincipalAccessor, DefaultClaimsPrincipalAccessor>();
 ```
 - In `GraphQLProcessor` add `AuthorizationValidationRule`:
 ```cs
