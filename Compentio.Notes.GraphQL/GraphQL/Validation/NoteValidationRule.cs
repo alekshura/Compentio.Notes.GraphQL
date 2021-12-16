@@ -10,10 +10,6 @@ namespace Compentio.Notes.GraphQL.GraphQL.Validation
 {
     public class NoteValidationRule : IValidationRule
     {
-        public NoteValidationRule()
-        {
-        }
-
         public async Task<INodeVisitor> ValidateAsync(ValidationContext context)
         {
             return new NodeVisitors(

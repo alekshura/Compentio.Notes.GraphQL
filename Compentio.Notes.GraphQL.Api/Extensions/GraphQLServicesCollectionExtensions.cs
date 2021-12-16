@@ -16,14 +16,14 @@ namespace Compentio.Notes.GraphQL.Api.Extensions
         {
             services.AddTransient<IGraphQLProcessor, GraphQLProcessor>();               
 
-            global::GraphQL.MicrosoftDI.GraphQLBuilderExtensions.AddGraphQL(services).AddSelfActivatingSchema<GraphQLSchema>()
-                .AddGraphTypes()
+            global::GraphQL.MicrosoftDI.GraphQLBuilderExtensions
+                .AddGraphQL(services)
+                .AddDocumentExecuter<DocumentExecuter>()
+                .AddDocumentWriter<DocumentWriter>()
+                .AddDataLoader()
+                .AddSelfActivatingSchema<GraphQLSchema>()
                 .AddSystemTextJson(options => options.PropertyNameCaseInsensitive = true);
 
-            services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
-            services.AddSingleton<DataLoaderDocumentListener>();
-            services.AddSingleton<IDocumentWriter, DocumentWriter>();
-            services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             return services;
         }
     }
