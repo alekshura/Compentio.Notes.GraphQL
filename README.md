@@ -282,7 +282,7 @@ While in example **GraphQL** endpoint defined in API controller, it uses defined
 [Authorization](https://graphql-dotnet.github.io/docs/getting-started/authorization/) in GraphQL based on Validation approach with using of `AuthorizationValidationRule`.
 To add it to the project we need to do:
 - Install [GraphQL.Server.Authorization.AspNetCore](https://www.nuget.org/packages/GraphQL.Server.Authorization.AspNetCore/) package
-- register your policies, register `HttpContextAccessor` and 'IClaimsPrincipalAccessor':
+- register your policies, register `HttpContextAccessor` and `IClaimsPrincipalAccessor`:
 ```cs
 services.AddAuthorization(o => {
                 o.AddPolicy("DefaultPolicy", policyBuilder => policyBuilder.RequireAuthenticatedUser());
@@ -291,27 +291,53 @@ services.AddAuthorization(o => {
 
 services.AddHttpContextAccessor().AddTransient<IClaimsPrincipalAccessor, DefaultClaimsPrincipalAccessor>();
 ```
-- In `GraphQLProcessor` add `AuthorizationValidationRule`:
+- Register `AuthorizationValidationRule` in container by adding `AddValidationRule<AuthorizationValidationRule>()`:
 ```cs
-public async Task<GraphQLResponse> ProcessQuery(GraphQLRequest request)
-{
-	var result = await _schema.ExecuteAsync(_documentWriter, o =>
-	{
-		o.Query = request.Query;
-		o.Inputs = request.Variables.ToInputs();
-		o.OperationName = request.OperationName;
-		o.ValidationRules = DocumentValidator.CoreRules
-			.Concat(new[] { new NoteValidationRule() })
-			.Concat(new[] { new AuthorizationValidationRule(_authorizationService, _claimsPrincipalAccessor) });
-		o.EnableMetrics = false;
-		o.ThrowOnUnhandledException = true;
-	});
-
-	var response = JsonSerializer.Deserialize<GraphQLResponse>(result, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-	return response;
-} 
+global::GraphQL.MicrosoftDI.GraphQLBuilderExtensions
+                .AddGraphQL(services)
+                .AddDocumentExecuter<DocumentExecuter>()
+                .AddDocumentWriter<DocumentWriter>()
+                .AddValidationRule<AuthorizationValidationRule>()
+                .AddDataLoader()
+                .AddSelfActivatingSchema<GraphQLSchema>()
+                .AddSystemTextJson(options => options.PropertyNameCaseInsensitive = true);
 ```
-Having it configured now we can add authorization for graph objects, for example only **Admin** has permissions that are defined in AdminPolicy to Note removal:
+- In `GraphQLProcessor` inject `AuthorizationValidationRule` and add it to `ValidationRules` collection:
+```cs
+public class GraphQLProcessor : IGraphQLProcessor
+{
+	private readonly ISchema _schema;
+	private readonly IDocumentWriter _documentWriter;
+	private readonly AuthorizationValidationRule _authorizationRule;
+
+	public GraphQLProcessor(IDocumentWriter documentWriter, ISchema schema,  AuthorizationValidationRule authorizationRule)
+	{
+		_documentWriter = documentWriter;
+		_schema = schema;
+		_authorizationRule = authorizationRule;
+	}
+	
+
+	public async Task<GraphQLResponse> ProcessQuery(GraphQLRequest request)
+	{
+		var result = await _schema.ExecuteAsync(_documentWriter, o =>
+		{
+			o.Query = request.Query;
+			o.Inputs = request.Variables.ToInputs();
+			o.OperationName = request.OperationName;
+			o.ValidationRules = DocumentValidator.CoreRules
+				.Concat(new[] { new NoteValidationRule() })
+				.Concat(new[] { _authorizationRule });
+			o.EnableMetrics = false;
+			o.ThrowOnUnhandledException = true;
+		});
+
+		var response = JsonSerializer.Deserialize<GraphQLResponse>(result, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+		return response;
+	}        
+}
+```
+Having it configured now we can add authorization for graph objects, for example only **Admin** has permissions to Note removal, what is achieved by adding `.AuthorizeWith("AdminPolicy")` to field definition:
 
 ```cs
 Field<StringGraphType>(
