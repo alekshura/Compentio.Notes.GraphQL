@@ -217,6 +217,62 @@ public static class GraphQLServicesCollectionExtensions
 	}
 }
 ```
-`AddGraphTypes()` here scans the calling assembly for classes that implement `GraphQL.Types.IGraphType` and registers them as transients within the dependency injection, `AddGraphQL().AddSelfActivatingSchema<GraphQLSchema>()` - registers our schema.
+- `AddGraphTypes()` method scans the calling assembly for classes that implement `GraphQL.Types.IGraphType` and registers them as transients within the dependency injection 
+ - `AddGraphQL().AddSelfActivatingSchema<GraphQLSchema>()` registers our schema
+ - `services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>()` and `services.AddSingleton<DataLoaderDocumentListener>();` registers _[DataLoader](https://github.com/graphql/dataloader)_ for batch processing and caching _n + 1_ requests
+ - `services.AddTransient<IGraphQLProcessor, GraphQLProcessor>()` reqisters our `GraphQLProcessor`
+ 
+ ### Validation
+In **GraphQL** [validation](https://graphql-dotnet.github.io/docs/getting-started/query-validation/) run when a query is executed. There is a predefined list of  _validation rules_ that are turned on by default. You can add your own _validation rules_ or clear out the existing ones by setting the `ValidationRules` property:
+
+```cs
+var result = await _schema.ExecuteAsync(_documentWriter, o =>
+{
+	o.Query = request.Query;
+	o.Inputs = request.Variables.ToInputs();
+	o.OperationName = request.OperationName;
+	o.ValidationRules = DocumentValidator.CoreRules.Concat(new[] { new NoteValidationRule() });
+	o.EnableMetrics = false;
+	o.ThrowOnUnhandledException = true;
+});
+```
+Let assume, that note's title should be less than 50 characters.  `ValidationRule` implementation can look like:
+
+```cs
+public class NoteValidationRule : IValidationRule
+{
+	public NoteValidationRule()
+	{
+	}
+
+	public async Task<INodeVisitor> ValidateAsync(ValidationContext context)
+	{
+		return new NodeVisitors(
+			new MatchingNodeVisitor<Argument>((arg, context) =>
+			{
+				ValidateAsync(arg, context, context.TypeInfo.GetArgument());
+			})
+		);
+	}
+
+	private void ValidateAsync(IHaveValue node, ValidationContext context, QueryArgument argument)
+	{
+		if (!IsNoteArgument(argument.Name))
+			return;
+
+		var note = context.Inputs.FirstOrDefault(x => IsNoteArgument(x.Key)).Value as Dictionary<string, object>;
+		var noteTitle = note["title"] as string;
+
+		if (!string.IsNullOrEmpty(noteTitle) && noteTitle.Length > 50)
+		{
+			context.ReportError(new ValidationError(context.Document.OriginalQuery, "1.0", $"Field 'title' in argument '{argument.Name}' can not be longer than 50", node));
+		}
+	}
+	private static bool IsNoteArgument(string argumentName)
+	{
+		return argumentName.Equals("note", StringComparison.InvariantCultureIgnoreCase);
+	}
+}
+```
 
  
