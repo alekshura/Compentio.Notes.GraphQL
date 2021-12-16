@@ -142,8 +142,9 @@ public class MutationGraphType : ObjectGraphType
 {
 	public MutationGraphType(INotesService notesService)
 	{
-		Name = "Mutation";
+		Name = $"{GetType().Name}";
 		Description = "Mutation for the entities in the service object graph.";
+		this.AuthorizeWith("DefaultPolicy");
 
 		FieldAsync<NoteGraphType, Note>(
 			"addNote",
@@ -175,8 +176,9 @@ public class MutationGraphType : ObjectGraphType
 			context =>
 			{
 				var noteId = context.GetArgument<string>("noteId");
-				return notesService.DeleteNote(noteId);
-			});
+				notesService.DeleteNote(noteId);
+				return $"The note with noteId: '{noteId}' has been successfully deleted from db.";
+			}).AuthorizeWith("AdminPolicy");
 	}       
 }
 
@@ -201,8 +203,9 @@ public static class GraphQLServicesCollectionExtensions
 {
 	public static IServiceCollection ConfigureGraphQL(this IServiceCollection services)
 	{
-		services.AddTransient<IGraphQLProcessor, GraphQLProcessor>()
-			.AddGraphQL().AddSelfActivatingSchema<GraphQLSchema>()
+		services.AddTransient<IGraphQLProcessor, GraphQLProcessor>();               
+
+		global::GraphQL.MicrosoftDI.GraphQLBuilderExtensions.AddGraphQL(services).AddSelfActivatingSchema<GraphQLSchema>()
 			.AddGraphTypes()
 			.AddSystemTextJson(options => options.PropertyNameCaseInsensitive = true);
 
