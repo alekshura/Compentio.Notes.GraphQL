@@ -207,21 +207,20 @@ public static class GraphQLServicesCollectionExtensions
 	{
 		services.AddTransient<IGraphQLProcessor, GraphQLProcessor>();               
 
-		global::GraphQL.MicrosoftDI.GraphQLBuilderExtensions.AddGraphQL(services).AddSelfActivatingSchema<GraphQLSchema>()
-			.AddGraphTypes()
+		global::GraphQL.MicrosoftDI.GraphQLBuilderExtensions
+			.AddGraphQL(services)
+			.AddDocumentExecuter<DocumentExecuter>()
+			.AddDocumentWriter<DocumentWriter>()
+			.AddDataLoader()
+			.AddSelfActivatingSchema<GraphQLSchema>()
 			.AddSystemTextJson(options => options.PropertyNameCaseInsensitive = true);
 
-		services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
-		services.AddSingleton<DataLoaderDocumentListener>();
-		services.AddSingleton<IDocumentWriter, DocumentWriter>();
-		services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
 		return services;
 	}
 }
 ```
-- `AddGraphTypes()` method scans the calling assembly for classes that implement `GraphQL.Types.IGraphType` and registers them as transients within the dependency injection 
- - `AddGraphQL().AddSelfActivatingSchema<GraphQLSchema>()` registers our schema
- - `services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>()` and `services.AddSingleton<DataLoaderDocumentListener>();` registers _[DataLoader](https://github.com/graphql/dataloader)_ for batch processing and caching _n + 1_ requests
+ - `AddGraphQL().AddSelfActivatingSchema<GraphQLSchema>()` registers our schema with all graph types
+ - `AddDataLoader()` registers _[DataLoader](https://github.com/graphql/dataloader)_ for batch processing and caching _n + 1_ requests
  - `services.AddTransient<IGraphQLProcessor, GraphQLProcessor>()` reqisters our `GraphQLProcessor`
  
  ### Validation
@@ -275,6 +274,57 @@ public class NoteValidationRule : IValidationRule
 		return argumentName.Equals("note", StringComparison.InvariantCultureIgnoreCase);
 	}
 }
+```
+
+### Authorization
+
+While in example **GraphQL** endpoint defined in API controller, it uses defined authentication for it. 
+[Authorization](https://graphql-dotnet.github.io/docs/getting-started/authorization/) in GraphQL based on Validation approach with using of `AuthorizationValidationRule`.
+To add it to the project we need to do:
+- Install [GraphQL.Server.Authorization.AspNetCore](https://www.nuget.org/packages/GraphQL.Server.Authorization.AspNetCore/) package
+- register your policies, register `HttpContextAccessor` and 'IClaimsPrincipalAccessor':
+```cs
+services.AddAuthorization(o => {
+                o.AddPolicy("DefaultPolicy", policyBuilder => policyBuilder.RequireAuthenticatedUser());
+                o.AddPolicy("AdminPolicy", policyBuilder => policyBuilder.RequireClaim("role", "Admin"));
+            });
+
+services.AddHttpContextAccessor().AddTransient<IClaimsPrincipalAccessor, DefaultClaimsPrincipalAccessor>();
+```
+- In `GraphQLProcessor` add `AuthorizationValidationRule`:
+```cs
+public async Task<GraphQLResponse> ProcessQuery(GraphQLRequest request)
+{
+	var result = await _schema.ExecuteAsync(_documentWriter, o =>
+	{
+		o.Query = request.Query;
+		o.Inputs = request.Variables.ToInputs();
+		o.OperationName = request.OperationName;
+		o.ValidationRules = DocumentValidator.CoreRules
+			.Concat(new[] { new NoteValidationRule() })
+			.Concat(new[] { new AuthorizationValidationRule(_authorizationService, _claimsPrincipalAccessor) });
+		o.EnableMetrics = false;
+		o.ThrowOnUnhandledException = true;
+	});
+
+	var response = JsonSerializer.Deserialize<GraphQLResponse>(result, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+	return response;
+} 
+```
+Having it configured now we can add authorization for graph objects, for example only **Admin** has permissions that are defined in AdminPolicy to Note removal:
+
+```cs
+Field<StringGraphType>(
+	"deleteNote",
+	"Delete note from database.",
+	new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "noteId" }),
+	context =>
+	{
+		var noteId = context.GetArgument<string>("noteId");
+		notesService.DeleteNote(noteId);
+		return $"The note with noteId: '{noteId}' has been successfully deleted from db.";
+	}).AuthorizeWith("AdminPolicy");
+
 ```
 
  
