@@ -207,21 +207,20 @@ public static class GraphQLServicesCollectionExtensions
 	{
 		services.AddTransient<IGraphQLProcessor, GraphQLProcessor>();               
 
-		global::GraphQL.MicrosoftDI.GraphQLBuilderExtensions.AddGraphQL(services).AddSelfActivatingSchema<GraphQLSchema>()
-			.AddGraphTypes()
+		global::GraphQL.MicrosoftDI.GraphQLBuilderExtensions
+			.AddGraphQL(services)
+			.AddDocumentExecuter<DocumentExecuter>()
+			.AddDocumentWriter<DocumentWriter>()
+			.AddDataLoader()
+			.AddSelfActivatingSchema<GraphQLSchema>()
 			.AddSystemTextJson(options => options.PropertyNameCaseInsensitive = true);
 
-		services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
-		services.AddSingleton<DataLoaderDocumentListener>();
-		services.AddSingleton<IDocumentWriter, DocumentWriter>();
-		services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
 		return services;
 	}
 }
 ```
-- `AddGraphTypes()` method scans the calling assembly for classes that implement `GraphQL.Types.IGraphType` and registers them as transients within the dependency injection 
- - `AddGraphQL().AddSelfActivatingSchema<GraphQLSchema>()` registers our schema
- - `services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>()` and `services.AddSingleton<DataLoaderDocumentListener>();` registers _[DataLoader](https://github.com/graphql/dataloader)_ for batch processing and caching _n + 1_ requests
+ - `AddGraphQL().AddSelfActivatingSchema<GraphQLSchema>()` registers our schema with all graph types
+ - `AddDataLoader()` registers _[DataLoader](https://github.com/graphql/dataloader)_ for batch processing and caching _n + 1_ requests
  - `services.AddTransient<IGraphQLProcessor, GraphQLProcessor>()` reqisters our `GraphQLProcessor`
  
  ### Validation
