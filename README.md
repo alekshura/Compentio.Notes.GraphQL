@@ -76,7 +76,7 @@ public async Task<GraphQLResponse> ProcessQuery(GraphQLRequest request)
 	});
 
 	var response = JsonSerializer.Deserialize<GraphQLResponse>(result, 
-	   new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+	      new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 	return response;
 }
 ```
@@ -89,7 +89,7 @@ Next step, we should define our **GraphQL** schema. In my case it is used for da
 public class GraphQLSchema : Schema
 {
 	public GraphQLSchema(QueryGraphType query, MutationGraphType mutation, IServiceProvider serviceProvider) 
-	: base(serviceProvider)
+	     : base(serviceProvider)
 	{
 		Query = query;
 		Mutation = mutation;
