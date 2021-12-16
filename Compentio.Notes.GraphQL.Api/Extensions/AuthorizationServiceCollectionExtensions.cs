@@ -11,7 +11,7 @@ namespace Compentio.Notes.GraphQL.Api.Extensions
     public static class AuthorizationServiceCollectionExtensions
     {
         /// <summary>
-        /// Add authentication bypass
+        /// Add authentication for REST cintrollers and GraphQL endpoint
         /// </summary>
         /// <param name="services"></param>
         /// <param name="configuration"></param>
@@ -27,7 +27,7 @@ namespace Compentio.Notes.GraphQL.Api.Extensions
             }).AddScheme<AuthenticationSchemeOptions, AdminAuthenticationHandler>(defaultAuthenticateScheme, null);
 
 
-            // Or use UserAuthenticationHandler scheme. In this case used does not have permissions to note deletion
+            // Use UserAuthenticationHandler scheme. In this case used does not have permissions to note deletion
             //.AddScheme<AuthenticationSchemeOptions, UserAuthenticationHandler>(defaultAuthenticateScheme, null);
 
             services.AddAuthorization(o => {

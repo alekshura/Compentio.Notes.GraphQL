@@ -6,6 +6,7 @@ using GraphQL;
 using Compentio.Notes.GraphQL.Notes;
 using GraphQL.SystemTextJson;
 using GraphQL.DataLoader;
+using GraphQL.Server.Authorization.AspNetCore;
 
 namespace Compentio.Notes.GraphQL.Api.Extensions
 {
@@ -20,6 +21,7 @@ namespace Compentio.Notes.GraphQL.Api.Extensions
                 .AddGraphQL(services)
                 .AddDocumentExecuter<DocumentExecuter>()
                 .AddDocumentWriter<DocumentWriter>()
+                .AddValidationRule<AuthorizationValidationRule>()
                 .AddDataLoader()
                 .AddSelfActivatingSchema<GraphQLSchema>()
                 .AddSystemTextJson(options => options.PropertyNameCaseInsensitive = true);
