@@ -12,26 +12,22 @@
     [Route("api")]
     public class GraphQLController : ControllerBase
     {
-        private readonly IGraphQLProcessor _graphQLService;
+        private readonly IGraphQLProcessor _graphQLProcessor;
 
-        public GraphQLController(IGraphQLProcessor graphQLService)
+        public GraphQLController(IGraphQLProcessor graphQLProcessor)
         {
-            _graphQLService = graphQLService;
+            _graphQLProcessor = graphQLProcessor;
         }
 
         [HttpPost("/graphql")]
         [ApiConventionMethod(typeof(GraphQLApiConventions), nameof(GraphQLApiConventions.Post))]
         public async Task<IActionResult> Post([FromBody] GraphQLRequest request)
         {
-            var result = await _graphQLService.ProcessQuery(request);
+            var result = await _graphQLProcessor.ProcessQuery(request);
+            
             if (result.HasError)
             {
                 return BadRequest(result);
-            }
-
-            if (result.Data is null)
-            {
-                return NotFound();
             }
 
             return Ok(result);

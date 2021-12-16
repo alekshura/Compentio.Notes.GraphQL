@@ -14,8 +14,9 @@ namespace Compentio.Notes.GraphQL.Api.Extensions
     {
         public static IServiceCollection ConfigureGraphQL(this IServiceCollection services)
         {
-            services.AddTransient<IGraphQLProcessor, GraphQLProcessor>()
-                .AddGraphQL().AddSelfActivatingSchema<GraphQLSchema>()
+            services.AddTransient<IGraphQLProcessor, GraphQLProcessor>();               
+
+            global::GraphQL.MicrosoftDI.GraphQLBuilderExtensions.AddGraphQL(services).AddSelfActivatingSchema<GraphQLSchema>()
                 .AddGraphTypes()
                 .AddSystemTextJson(options => options.PropertyNameCaseInsensitive = true);
 

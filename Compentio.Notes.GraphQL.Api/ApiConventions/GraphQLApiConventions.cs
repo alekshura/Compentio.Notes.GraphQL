@@ -8,7 +8,8 @@ namespace Compentio.Notes.GraphQL.Api.ApiConventions
     {
         [ProducesDefaultResponseType(typeof(GraphQLResponse))]
         [ProducesResponseType(typeof(GraphQLResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(GraphQLResponse), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(GraphQLResponse), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(GraphQLResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public static void Post()

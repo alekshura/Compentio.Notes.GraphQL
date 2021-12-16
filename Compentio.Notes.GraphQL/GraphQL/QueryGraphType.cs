@@ -11,7 +11,7 @@ namespace Compentio.Notes.GraphQL.GraphQL
     {
         public QueryGraphType(INotesService notesService)
         {
-            Name = "Queries";
+            Name = $"{GetType().Name}";
 
             FieldAsync<NoteGraphType, Note>("note",
                 "Gets a note by its id.",

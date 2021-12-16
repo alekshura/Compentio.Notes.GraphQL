@@ -7,6 +7,8 @@ using GraphQL.Validation;
 using System.Text.Json;
 using System.Linq;
 using Compentio.Notes.GraphQL.GraphQL.Validation;
+using GraphQL.Server.Authorization.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Compentio.Notes.GraphQL.Notes
 {
@@ -19,11 +21,16 @@ namespace Compentio.Notes.GraphQL.Notes
     {
         private readonly ISchema _schema;
         private readonly IDocumentWriter _documentWriter;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IClaimsPrincipalAccessor _claimsPrincipalAccessor;
 
-        public GraphQLProcessor(IDocumentWriter documentWriter, ISchema schema)
+        public GraphQLProcessor(IDocumentWriter documentWriter, ISchema schema, 
+            IAuthorizationService authorizationService, IClaimsPrincipalAccessor claimsPrincipalAccessor)
         {
             _documentWriter = documentWriter;
             _schema = schema;
+            _authorizationService = authorizationService;
+            _claimsPrincipalAccessor = claimsPrincipalAccessor;
         }
         
 
@@ -34,7 +41,9 @@ namespace Compentio.Notes.GraphQL.Notes
                 o.Query = request.Query;
                 o.Inputs = request.Variables.ToInputs();
                 o.OperationName = request.OperationName;
-                o.ValidationRules = DocumentValidator.CoreRules.Concat(new[] { new NoteValidationRule() });
+                o.ValidationRules = DocumentValidator.CoreRules
+                    .Concat(new[] { new NoteValidationRule() })
+                    .Concat(new[] { new AuthorizationValidationRule(_authorizationService, _claimsPrincipalAccessor) });
                 o.EnableMetrics = false;
                 o.ThrowOnUnhandledException = true;
             });

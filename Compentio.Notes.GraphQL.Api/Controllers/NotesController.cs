@@ -80,6 +80,7 @@
         /// <returns></returns>
         [HttpDelete("{id}")]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Delete))]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> Delete(string id)
         {
             await _notesService.DeleteNote(id).ConfigureAwait(false);

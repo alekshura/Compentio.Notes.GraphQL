@@ -1,5 +1,4 @@
-﻿using Compentio.Notes.GraphQL.Notes;
-using GraphQL.Language.AST;
+﻿using GraphQL.Language.AST;
 using GraphQL.Types;
 using GraphQL.Validation;
 using System;
@@ -27,6 +26,9 @@ namespace Compentio.Notes.GraphQL.GraphQL.Validation
 
         private void ValidateAsync(IHaveValue node, ValidationContext context, QueryArgument argument)
         {
+            if (argument is null)
+                return;
+
             if (!IsNoteArgument(argument.Name))
                 return;
 

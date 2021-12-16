@@ -10,8 +10,9 @@ namespace Compentio.Notes.GraphQL.GraphQL
     {
         public MutationGraphType(INotesService notesService)
         {
-            Name = "Mutation";
+            Name = $"{GetType().Name}";
             Description = "Mutation for the entities in the service object graph.";
+            this.AuthorizeWith("DefaultPolicy");
 
             FieldAsync<NoteGraphType, Note>(
                 "addNote",
@@ -43,8 +44,9 @@ namespace Compentio.Notes.GraphQL.GraphQL
                 context =>
                 {
                     var noteId = context.GetArgument<string>("noteId");
-                    return notesService.DeleteNote(noteId);
-                });
+                    notesService.DeleteNote(noteId);
+                    return $"The note with noteId: '{noteId}' has been successfully deleted from db.";
+                }).AuthorizeWith("AdminPolicy");
         }       
     }
 

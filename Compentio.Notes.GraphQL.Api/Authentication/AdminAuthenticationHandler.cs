@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Compentio.Notes.GraphQL.Api.Authentication
 {
-    public class NotesAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+    public class AdminAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        public NotesAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, 
+        public AdminAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, 
             ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
             : base(options, logger, encoder, clock)
         {
@@ -20,8 +20,9 @@ namespace Compentio.Notes.GraphQL.Api.Authentication
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, "Notes user"),
-                new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
+                new Claim(ClaimTypes.Name, "Notes Admin"),
+                new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
+                new Claim("role", "Admin")
             };
 
             var identity = new ClaimsIdentity(claims, "Notes");

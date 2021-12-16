@@ -26,7 +26,7 @@ namespace Compentio.Notes.GraphQL.Api
             
             services.AddAppProblemDetails(Environment);
 
-            services.AddAuthentication(Configuration);
+            services.AddAuthorization(Configuration);
 
             services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase);
             
