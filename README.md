@@ -276,4 +276,55 @@ public class NoteValidationRule : IValidationRule
 }
 ```
 
+### Authorization
+
+While in example **GraphQL** endpoint defined in API controller, it uses defined authentication for it. 
+[Authorization](https://graphql-dotnet.github.io/docs/getting-started/authorization/) in GraphQL based on Validation approach with using of `AuthorizationValidationRule`.
+To add it to the project we need to do:
+- Install [GraphQL.Server.Authorization.AspNetCore](https://www.nuget.org/packages/GraphQL.Server.Authorization.AspNetCore/) package
+- register your policies, register `HttpContextAccessor` and 'IClaimsPrincipalAccessor':
+```cs
+services.AddAuthorization(o => {
+                o.AddPolicy("DefaultPolicy", policyBuilder => policyBuilder.RequireAuthenticatedUser());
+                o.AddPolicy("AdminPolicy", policyBuilder => policyBuilder.RequireClaim("role", "Admin"));
+            });
+
+            services.AddHttpContextAccessor().AddTransient<IClaimsPrincipalAccessor, DefaultClaimsPrincipalAccessor>();
+```
+- In `GraphQLProcessor` add `AuthorizationValidationRule`:
+```cs
+public async Task<GraphQLResponse> ProcessQuery(GraphQLRequest request)
+{
+	var result = await _schema.ExecuteAsync(_documentWriter, o =>
+	{
+		o.Query = request.Query;
+		o.Inputs = request.Variables.ToInputs();
+		o.OperationName = request.OperationName;
+		o.ValidationRules = DocumentValidator.CoreRules
+			.Concat(new[] { new NoteValidationRule() })
+			.Concat(new[] { new AuthorizationValidationRule(_authorizationService, _claimsPrincipalAccessor) });
+		o.EnableMetrics = false;
+		o.ThrowOnUnhandledException = true;
+	});
+
+	var response = JsonSerializer.Deserialize<GraphQLResponse>(result, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+	return response;
+} 
+```
+Having it configured now we can add authorization for graph objects, for example only Admin has permissions to Note removal:
+
+```cs
+Field<StringGraphType>(
+	"deleteNote",
+	"Delete note from database.",
+	new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "noteId" }),
+	context =>
+	{
+		var noteId = context.GetArgument<string>("noteId");
+		notesService.DeleteNote(noteId);
+		return $"The note with noteId: '{noteId}' has been successfully deleted from db.";
+	}).AuthorizeWith("AdminPolicy");
+
+```
+
  
