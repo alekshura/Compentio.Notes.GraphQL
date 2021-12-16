@@ -311,7 +311,7 @@ public async Task<GraphQLResponse> ProcessQuery(GraphQLRequest request)
 	return response;
 } 
 ```
-Having it configured now we can add authorization for graph objects, for example only Admin has permissions to Note removal:
+Having it configured now we can add authorization for graph objects, for example only **Admin** has permissions that are defined in AdminPolicy to Note removal:
 
 ```cs
 Field<StringGraphType>(
