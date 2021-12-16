@@ -68,7 +68,9 @@ public async Task<GraphQLResponse> ProcessQuery(GraphQLRequest request)
 		o.Query = request.Query;
 		o.Inputs = request.Variables.ToInputs();
 		o.OperationName = request.OperationName;
-		o.ValidationRules = DocumentValidator.CoreRules;
+		o.ValidationRules = DocumentValidator.CoreRules
+			.Concat(new[] { new NoteValidationRule() })
+			.Concat(new[] { new AuthorizationValidationRule(_authorizationService, _claimsPrincipalAccessor) });
 		o.EnableMetrics = false;
 		o.ThrowOnUnhandledException = true;
 	});
