@@ -2,6 +2,7 @@
 {
     using Microsoft.Extensions.DependencyInjection;
     using Compentio.Notes.GraphQL.Notes;
+    using Compentio.SourceMapper.DependencyInjection;
     using System.Diagnostics.CodeAnalysis;
 
     [ExcludeFromCodeCoverage]
@@ -10,10 +11,8 @@
         public static IServiceCollection AddServices(this IServiceCollection services)
         {            
             services.AddHealthChecks();
-
-            // add new services below 
             services.AddTransient<INotesService, NotesService>();
-            services.AddTransient<INotesMapper, NotesMapper>();
+            services.AddMappers();
             return services;
         }
     }
